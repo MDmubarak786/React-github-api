@@ -8,11 +8,11 @@ const testData = [
 ];
 const List1 = (props) => (
   <div>
-    {props.profiles.map(values1 => <Names {...values1} />)}
-
+    {props.profiles.map(profile1 => <Names {...profile1} />)}
   </div>
 );
 class Names extends Component {
+  
   render() {
     const profile = this.props;
     return (
@@ -26,16 +26,17 @@ class Names extends Component {
   }
 }
 class Search extends Component {
+  handle = (event) => {
+    event.preventDefault();
+    console.log("hello")
+  }
   render() {
-    const handle = (event) => {
-      event.preventDefault();
-      console.log("hello")
-    }
+   
     return (
       <div>
-        <form>
+        <form onSubmit={this.handle}>
           <label>Name : </label>
-          <input type="text" placeholder="name pls" />
+          <input type="text" placeholder="name pls" required />
           <button>Submit</button>
         </form>
       </div>
@@ -56,13 +57,18 @@ class Header extends Component {
 }
 
 // All component here
+
 class App extends Component {
+  state = {
+    profiles: testData,
+  };
+
   render() {
     return (
       <div>
         <Header title="Hello Github Users" />
         <Search />
-        <List1 profiles={testData} />
+        <List1 profiles={this.state.profiles} />
       </div>
     )
   }
