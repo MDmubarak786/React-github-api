@@ -1,24 +1,20 @@
+import axios from 'axios';
 import React, { Component } from 'react';
 import './App.css';
 
-const testData = [
-  { name: "Dan Abramov", avatar_url: "https://avatars0.githubusercontent.com/u/810438?v=4", company: "@facebook" },
-  { name: "Sophie Alpert", avatar_url: "https://avatars2.githubusercontent.com/u/6820?v=4", company: "Humu" },
-  { name: "Sebastian Markbåge", avatar_url: "https://avatars2.githubusercontent.com/u/63648?v=4", company: "Facebook" },
-];
 const List1 = (props) => (
   <div>
-    {props.profiles.map(profile1 => <Names {...profile1} />)}
+    {props.profiles.map(profile1 => <Names key={profile1.id} {...profile1} />)}
   </div>
 );
 class Names extends Component {
-  
+
   render() {
     const profile = this.props;
     return (
       <div>
         <h3>{profile.name}</h3>
-        <img src={profile.avatar_url} height="220px"></img>
+        <img src={profile.avatar_url} height="220px" alt="none"></img>
         <h4>{profile.company}</h4>
         <h1>-------------------</h1>
       </div>
@@ -26,17 +22,29 @@ class Names extends Component {
   }
 }
 class Search extends Component {
-  handle = (event) => {
+  state = { username: '' };
+  handle = async (event) => {
     event.preventDefault();
-    console.log("hello")
+    console.log(this.state.username)
+    const getname = await axios.get(`https://api.github.com/users/${this.state.username}`);
+    this.props.onSubmit(getname.data);
+
+
+
+    this.setState({ username: '' });
+
   }
   render() {
-   
+
     return (
       <div>
         <form onSubmit={this.handle}>
           <label>Name : </label>
-          <input type="text" placeholder="name pls" required />
+          <input type="text"
+            placeholder="name pls"
+            required
+            value={this.state.username}
+            onChange={event => this.setState({ username: event.target.value })} />
           <button>Submit</button>
         </form>
       </div>
@@ -60,14 +68,20 @@ class Header extends Component {
 
 class App extends Component {
   state = {
-    profiles: testData,
+    profiles: [],
+  };
+
+  addnewprofile = (profileData) => {
+    this.setState(prevState => ({
+      profiles: [...prevState.profiles, profileData],
+    }));
   };
 
   render() {
     return (
       <div>
         <Header title="Hello Github Users" />
-        <Search />
+        <Search onSubmit={this.addNewProfile} />
         <List1 profiles={this.state.profiles} />
       </div>
     )
